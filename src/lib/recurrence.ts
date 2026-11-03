@@ -1,11 +1,12 @@
 /**
- * Linear recurrences with constant coefficients, the generating function
- * G(x) = P(x)/Q(x), and cover-up partial fractions (Brualdi 7.4–7.5).
+ * Linear recurrences → G(x)=P/Q → closed form.
+ * Cover-up on distinct linear factors. Order <= 3 in the UI.
+ * Brualdi ch. 7.
  */
 
 export interface Recurrence {
   name: string;
-  /** a_n = c[0] a_{n-1} + c[1] a_{n-2} + ... + inhomog, n >= order. */
+  /** a_n = c[0] a_{n-1} + c[1] a_{n-2} + ...  (+ inhomog). */
   coeffs: number[];
   init: number[];
   /** Constant inhomogeneity b in a_n = (homogeneous) + b. */
@@ -19,28 +20,28 @@ export const PRESETS: Recurrence[] = [
     coeffs: [1, 1],
     init: [0, 1],
     inhomog: 0,
-    note: "Lecture: C(x)=x²−x−1. Closed form is Binet.",
+    note: "Lecture: C(x)=x²−x−1. Binet after you solve it.",
   },
   {
     name: "1×n tilings by squares and dominoes",
     coeffs: [1, 1],
     init: [1, 1],
     inhomog: 0,
-    note: "HW 8 Q1. a_n = F_{n+1}, empty board counted as 1.",
+    note: "HW 8 Q1. a_n = F_{n+1}. Empty board = 1.",
   },
   {
     name: "Three colours, no two adjacent reds",
     coeffs: [2, 2],
     init: [1, 3],
     inhomog: 0,
-    note: "HW 8 Q2. Roots 1±√3.",
+    note: "HW 8 Q2. Roots 1±√3. a_3=22 if I counted right.",
   },
   {
     name: "a_n = 3 a_{n-1} + 2, a_0 = 1",
     coeffs: [3],
     init: [1],
     inhomog: 2,
-    note: "HW 7. G(x)=(1+x)/((1−x)(1−3x)), a_n = 2·3^n − 1.",
+    note: "HW 7. G(x)=(1+x)/((1−x)(1−3x)). Closed form 2·3^n − 1.",
   },
   {
     name: "Towers of Hanoi",
@@ -88,7 +89,7 @@ function cAbs(a: Complex): number {
   return Math.hypot(a.re, a.im);
 }
 
-/** Roots of t^k − c1 t^{k-1} − ... − ck = 0, companion-matrix eigenvalues via Durand–Kerner. */
+/** Roots of t^k - c1 t^{k-1} - ... = 0. Durand-Kerner, good enough for k<=3. */
 export function charRoots(coeffs: number[]): Complex[] {
   const k = coeffs.length;
   const p = [1, ...coeffs.map((c) => -c)];
@@ -135,10 +136,9 @@ export interface PartialTerm {
 }
 
 /**
- * G(x) = P(x) / Q(x) with Q(x) = 1 − c1 x − c2 x² − ⋯.
- * For a homogeneous recurrence the numerator is determined by the initial
- * conditions. A constant inhomogeneity b adds b x / ((1−x) Q_hom(x)) after
- * the usual shift, handled by adjoining the extra root 1 when needed.
+ * G(x) = P(x)/Q(x), Q = 1 - c1 x - c2 x^2 - ...
+ * P comes from the initial conditions.
+ * Constant inhomog → extra (1-x) in the denominator (Hanoi, 3a_{n-1}+2).
  */
 export function generatingFunction(r: Recurrence): {
   Q: number[];
@@ -254,6 +254,7 @@ export function closedFormLatex(r: Recurrence): string {
 }
 
 export function evalClosed(r: Recurrence, n: number): number {
+  // plug n into sum A r^n. complex roots come in pairs, we just take Re.
   const { P, Q } = generatingFunction(r);
   const terms = coverUp(P, Q);
   let s = 0;

@@ -1,20 +1,16 @@
 # Combiscope
 
-A zero-install lab for Tsinghua **70240384 Combinatorics and Algorithms Design**.
+Browser lab for Tsinghua **70240384**. Catalan bijections, Ferrers diagrams, generating functions from a linear recurrence.
 
-**Use it:** open [pedroggbm.com/combinatorics](https://pedroggbm.com/combinatorics).
+Open [pedroggbm.com/combinatorics](https://pedroggbm.com/combinatorics). No install.
 
-Three rooms, each tied to a lecture and a homework:
-
-| Room | What you see | Course hook |
+| Room | What's on the page | Where in the course |
 | --- | --- | --- |
-| Catalan | One Dyck word drawn as a path, parentheses, stack pops, a plane binary tree, a polygon triangulation, and noncrossing handshakes. Reflection principle on the side. | Week 6-2, HW 6.2 |
-| Partitions | Ferrers diagram, conjugate, L-hook bijection with distinct odd parts. Table of `p(n)`. | Week 5, HW 5.1 Q3, Brualdi 8.3 |
-| Generating functions | Recurrence → `G(x)=P/Q` → closed form, with plots of `a_n` and the ratio `a_{n+1}/a_n`. | Weeks 5–7, HW 7–8 |
+| Catalan | One Dyck word as a path, parentheses, stack pops, plane tree, triangulation, handshakes. Reflection under that. | Week 6-2, HW 9 |
+| Partitions | Ferrers, conjugate, L-hooks (self-conjugate ↔ distinct odd parts). Table of `p(n)`. | Week 5 Q3, Brualdi 8.3 |
+| Generating functions | Recurrence → `G(x)=P/Q` → closed form. Plots of `a_n` and `a_{n+1}/a_n`. | HW 7, HW 8 |
 
-Nothing to install for a demo. Click the rooms at the top.
-
-## Run locally
+## Local
 
 ```bash
 npm install
@@ -22,30 +18,24 @@ npm test
 npm run dev
 ```
 
-Then open the URL Vite prints (the app is mounted at `/combinatorics/`).
+Vite prints a localhost URL. `npm run build` writes `dist/`, that's what gets copied onto the site.
 
-```bash
-npm run build
-```
-
-writes a static tree to `dist/`, which is what is copied to the course site.
-
-## Figures for the report
+## Report figures
 
 ```bash
 python -m venv .venv
-.venv/bin/pip install seaborn matplotlib numpy
+.venv/bin/pip install -r figures/requirements.txt
 .venv/bin/python figures/make_figures.py
 ```
 
 ## Tests
 
-The suite checks lecture numbers, not just smoke:
+Against lecture / HW numbers, not just "it renders":
 
-- `C_3 = 5`, `C_4 = 14`, and the five stack words at `n=3` (312 is missing)
-- `p(5)=7`, the `n=8` self-conjugate examples, and the Euler product up to `n=12`
+- `C_3 = 5`, `C_4 = 14`, n=3 stack words (312 missing)
+- `p(5)=7`, the n=8 self-conjugate examples, Euler product through n=12
 - tiling `a_4=5`, no-adjacent-reds `a_3=22`, `a_n=2·3^n-1`, Hanoi `2^n-1`
 
 ## License
 
-MIT. See `LICENSE`.
+MIT.

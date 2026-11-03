@@ -32,6 +32,7 @@ describe("Catalan numbers", () => {
 
 describe("lecture bijections at n=3", () => {
   it("gives the five stack words and excludes 312", () => {
+    // listing order is Dyck-lex, lecture listed them in a different order. set equality.
     const stacks = allDyck(3).map((w) => dyckToStack(w).join(""));
     expect([...stacks].sort()).toEqual([...LECTURE_STACK_N3].sort());
     expect(stacks).not.toContain(MISSING_STACK_N3);

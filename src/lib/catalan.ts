@@ -1,9 +1,9 @@
 /**
- * Catalan numbers and the lecture bijections (Brualdi 8.1; week 6-2).
+ * Catalan stuff from week 6-2 / Brualdi 8.1.
+ * C_0 = 1, then the convolution. Dyck word = n X's and n Y's,
+ * every prefix has #X >= #Y.
  *
- * Indexing: C_0 = 1, C_n = sum_{k=0}^{n-1} C_k C_{n-1-k}.
- * A Dyck word of semilength n is n letters X and n letters Y such that
- * every prefix has at least as many X as Y. X is an up/east-open/push step.
+ * X means "open / push / North". Y the other one.
  */
 
 export type Dyck = string;
@@ -33,7 +33,7 @@ export function catalanRecurrence(n: number): number[] {
   return c;
 }
 
-/** All Dyck words of semilength n, lexicographic with X < Y. */
+/** All Dyck words of semilength n. X before Y in the listing. */
 export function allDyck(n: number): Dyck[] {
   const out: Dyck[] = [];
   const buf: string[] = [];
@@ -62,8 +62,9 @@ export function dyckToParens(w: Dyck): string {
 }
 
 /**
- * Stack pop sequence: push 1..n in order. X = push next, Y = pop.
- * Lecture n=3: 123, 132, 213, 231, 321. Missing 312.
+ * Stack: push 1..n in order. X = push next, Y = pop.
+ * n=3 → 123, 132, 213, 231, 321. 312 is impossible
+ * (after you pop 3, 2 is sitting on 1).
  */
 export function dyckToStack(w: Dyck): number[] {
   const n = w.length / 2;
@@ -87,7 +88,7 @@ export interface BinTree {
   right: BinTree | null;
 }
 
-/** First-return decomposition: w = X A Y B with A, B Dyck. */
+/** First return to the x-axis: w = X A Y B. A, B Dyck (maybe empty). */
 export function dyckToTree(w: Dyck): BinTree | null {
   if (w.length === 0) return null;
   let depth = 0;
@@ -112,8 +113,8 @@ export function treeSize(t: BinTree | null): number {
 export type Triangle = [number, number, number];
 
 /**
- * Triangulation of a convex (n+2)-gon with vertices 0..n+1 in order.
- * The root triangle uses the base 0 — (n+1) and vertex (leftSize + 1).
+ * Convex (n+2)-gon, vertices 0..n+1 going around.
+ * Root triangle = base 0..(n+1) plus vertex (leftSize+1).
  */
 export function dyckToTriangulation(w: Dyck): Triangle[] {
   const n = w.length / 2;
@@ -133,7 +134,7 @@ export function dyckToTriangulation(w: Dyck): Triangle[] {
   return triangles;
 }
 
-/** Noncrossing pairing of 2n labeled seats 0..2n-1 around a circle. */
+/** 2n people around a table, n handshakes, no crossing. Seats 0..2n-1. */
 export function dyckToHandshakes(w: Dyck): [number, number][] {
   const pairs: [number, number][] = [];
   function walk(word: Dyck, offset: number): void {
@@ -163,7 +164,7 @@ export interface LatticePoint {
   y: number;
 }
 
-/** East (1,0) and North (0,1). X = North, Y = East, so good paths keep x <= y. */
+/** X = North (0,1), Y = East (1,0). Stay on or above the diagonal → x <= y. */
 export function dyckToPath(w: Dyck): LatticePoint[] {
   const pts: LatticePoint[] = [{ x: 0, y: 0 }];
   for (const ch of w) {
@@ -189,7 +190,7 @@ function pointsOf(steps: ("E" | "N")[]): LatticePoint[] {
   return pts;
 }
 
-/** First index i > 0 where x - y = 1, or -1 if the path is a Dyck path. */
+/** First time we poke through x-y=1. -1 if the path is good. */
 export function firstBad(points: LatticePoint[]): number {
   for (let i = 1; i < points.length; i++) {
     if (points[i].x - points[i].y === 1) return i;
@@ -197,7 +198,7 @@ export function firstBad(points: LatticePoint[]): number {
   return -1;
 }
 
-/** All monotone paths (0,0) → (n,n). */
+/** Every monotone path (0,0) -> (n,n). Not just the Dyck ones. */
 export function allMonoPaths(n: number): MonoPath[] {
   const out: MonoPath[] = [];
   const steps: ("E" | "N")[] = [];
@@ -222,14 +223,15 @@ export function allMonoPaths(n: number): MonoPath[] {
   return out;
 }
 
-/** Reflect (a,b) across the line x - y = 1. Sends (0,0) to (1,-1). */
+/** Reflect across x-y=1. (0,0) goes to (1,-1). */
 export function reflectAcrossBarrier(p: LatticePoint): LatticePoint {
   return { x: p.y + 1, y: p.x - 1 };
 }
 
 /**
- * André reflection: reflect the prefix up to the first touch of x-y=1.
- * The image starts at (1,-1) and still ends at (n,n).
+ * Geometric reflection (the picture people call "André").
+ * Flip the prefix up to the first touch of x-y=1.
+ * Starts at (1,-1) afterwards, still ends at (n,n).
  */
 export function reflectBadPrefix(path: MonoPath): LatticePoint[] {
   if (path.badIndex < 0) return path.points;

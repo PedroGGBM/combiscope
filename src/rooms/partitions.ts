@@ -22,7 +22,7 @@ function parseParts(s: string): Partition {
 
 export function mountPartitions(root: HTMLElement): void {
   root.innerHTML = `
-    <p class="lede">A Ferrers diagram is the picture of a partition: left-justified rows, weakly decreasing. Conjugation swaps rows and columns. The L-hook bijection of Brualdi Theorem 8.3.2 identifies self-conjugate diagrams with partitions into distinct odd parts.</p>
+    <p class="lede">Ferrers diagram of a partition (rows left-justified, decreasing). Conjugate = transpose. If the diagram equals its conjugate, peel the L-hooks: you get distinct odd parts. That's Brualdi 8.3.2.</p>
     <div class="formula">Σ p(n) x<sup>n</sup> = Π<sub>k≥1</sub> 1/(1 − x<sup>k</sup>). Self-conjugate diagrams of n are equinumerous with partitions of n into distinct odd parts.</div>
     <div class="toolbar">
       <label>partition λ (comma or +)
@@ -40,7 +40,7 @@ export function mountPartitions(root: HTMLElement): void {
       <div class="card"><h3>L-hooks / odd parts</h3><p class="cap" id="cap-c"></p><div class="stage" id="fc"></div></div>
     </div>
     <h2 style="margin:22px 0 8px">Euler product, truncated</h2>
-    <p class="caption">Coefficients of Π<sub>k=1</sub><sup>20</sup> 1/(1−x<sup>k</sup>) agree with p(n) for n ≤ 20. There is no closed formula for p(n) in this course; the product is the answer.</p>
+    <p class="caption">Truncate the product at k=20 and the coeffs are p(n) for n ≤ 20. No closed formula for a single p(n) in this course, the product is the thing.</p>
     <div class="card"><table class="nums" id="pn"></table></div>
   `;
 
@@ -97,6 +97,7 @@ export function mountPartitions(root: HTMLElement): void {
 }
 
 function drawFerrers(host: HTMLElement, p: Partition, highlightDurfee = false, hooks = false): void {
+  // dots as rounded rects. Durfee square in teal if we bother.
   clear(host);
   const cell = 18;
   const rows = p.length;

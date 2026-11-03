@@ -12,7 +12,7 @@ app.innerHTML = `
       <div>
         <div class="kicker">70240384 · Combinatorics and Algorithms Design</div>
         <h1>Combiscope</h1>
-        <p class="lede">A lab for the pictures that sit behind the counting formulas: Catalan bijections, Ferrers diagrams, and the generating function of a linear recurrence. Open a room and click around. Nothing to install.</p>
+        <p class="lede">Catalan bijections, Ferrers diagrams, G(x) for a linear recurrence. Pick a room at the top.</p>
       </div>
       <nav class="rooms" aria-label="Rooms">
         <button type="button" data-room="catalan" aria-current="page">Catalan</button>

@@ -45,6 +45,7 @@ describe("conjugation", () => {
 
 describe("self-conjugate ↔ distinct odd parts", () => {
   it("runs the n=8 lecture / HW 5.1 examples both ways", () => {
+    // 4+2+1+1 <-> 7+1 and 3+3+2 <-> 5+3
     for (const { sc, odds } of PRESET_N8) {
       expect(weight(sc)).toBe(8);
       expect(isSelfConjugate(sc)).toBe(true);

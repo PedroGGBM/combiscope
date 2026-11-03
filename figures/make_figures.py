@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Appendix plots for the Combiscope report. Run from the repo root."""
+# appendix plots. run from repo root.
+# seaborn because the report asked for it, the site itself is SVG.
 
 from __future__ import annotations
 
@@ -16,6 +17,7 @@ sns.set_theme(style="whitegrid", context="paper", font="DejaVu Serif")
 
 
 def catalan(n: int) -> int:
+    # C_n = (4n-2)/(n+1) C_{n-1}, starting at 1
     c = 1
     for k in range(n):
         c = c * (4 * k + 2) // (k + 2)
@@ -62,6 +64,7 @@ def fig_partition() -> None:
 
 def fig_recurrences() -> None:
     n = np.arange(0, 13)
+    # Fibonacci shifted (tilings). could have generated it, whatever
     tiling = np.array([1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233])
     reds = []
     a0, a1 = 1, 3

@@ -1,6 +1,6 @@
 /**
- * Integer partitions and Ferrers diagrams (Brualdi 8.3; HW 5.1 Q3).
- * Parts are stored nonincreasing and positive.
+ * Partitions / Ferrers (Brualdi 8.3, week 5 Q3).
+ * Parts stored decreasing, all positive. Empty partition = 0.
  */
 
 export type Partition = number[];
@@ -37,7 +37,7 @@ export function isSelfConjugate(p: Partition): boolean {
   return equalPart(p, conjugate(p));
 }
 
-/** Nested L-hooks of a self-conjugate diagram: hook i has size 1 + 2(λ_i − i). */
+/** Peel L-hooks off a self-conjugate diagram. Hook i (1-based) has size 1+2(λ_i-i). */
 export function hooksToOddParts(p: Partition): Partition {
   if (!isSelfConjugate(p)) {
     throw new Error("L-hooks are defined on self-conjugate partitions");
@@ -51,9 +51,8 @@ export function hooksToOddParts(p: Partition): Partition {
 }
 
 /**
- * Reverse of the hook map: nest L-hooks of odd sizes 2a+1.
- * The i-th hook (0-based, largest first) has arm a_i, so row i has
- * length a_i + i + 1, matching the nested diagram.
+ * Other direction: bend each odd part in the middle and nest the L's.
+ * Largest odd part on the outside.
  */
 export function oddPartsToSelfConjugate(odds: Partition): Partition {
   const sorted = [...odds].sort((a, b) => b - a);
@@ -105,7 +104,7 @@ export function partitionCount(n: number): number {
   return partitionsOf(n).length;
 }
 
-/** Coefficients of prod_{k=1}^m 1/(1-x^k) up to x^N. */
+/** Coeffs of prod_{k=1}^m 1/(1-x^k) up to x^N. Euler product, truncated. */
 export function partitionGfPrefix(maxPart: number, N: number): number[] {
   const a = Array(N + 1).fill(0);
   a[0] = 1;

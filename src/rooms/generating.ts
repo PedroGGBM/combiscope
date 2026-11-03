@@ -10,7 +10,7 @@ import { clear, svgEl, svgRoot } from "../lib/svg";
 
 export function mountGenerating(root: HTMLElement): void {
   root.innerHTML = `
-    <p class="lede">A linear recurrence with constant coefficients has generating function G(x) = P(x)/Q(x). The lab writes that fraction, splits it by cover-up, and plots a<sub>n</sub> against the closed form. The ratio a<sub>n+1</sub>/a<sub>n</sub> tends to the dominant characteristic root.</p>
+    <p class="lede">Type of thing from HW 7–8: a<sub>n</sub> from a linear recurrence, then G(x)=P/Q, then the closed form. Right-hand plot is a<sub>n+1</sub>/a<sub>n</sub>, which should crawl toward the biggest root.</p>
     <div class="formula" id="box"></div>
     <div class="toolbar">
       <label>preset
@@ -21,8 +21,8 @@ export function mountGenerating(root: HTMLElement): void {
       </label>
     </div>
     <div class="grid two">
-      <div class="card"><h3>a<sub>n</sub></h3><p class="cap">Dots from the recurrence; line from the closed form.</p><div class="stage plot" id="seq"></div></div>
-      <div class="card"><h3>ratio a<sub>n+1</sub>/a<sub>n</sub></h3><p class="cap">Should approach the largest |root| of C(t)=0.</p><div class="stage plot" id="ratio"></div></div>
+      <div class="card"><h3>a<sub>n</sub></h3><p class="cap">Dots = recurrence. Dashed line = closed form (hopefully on top of the dots).</p><div class="stage plot" id="seq"></div></div>
+      <div class="card"><h3>ratio a<sub>n+1</sub>/a<sub>n</sub></h3><p class="cap">→ largest |root| of C(t)=0, if the solver didn't mess up.</p><div class="stage plot" id="ratio"></div></div>
     </div>
     <div class="card" style="margin-top:14px"><table class="nums" id="tab"></table></div>
   `;
@@ -61,6 +61,7 @@ export function mountGenerating(root: HTMLElement): void {
 }
 
 function toHtml(tex: string): string {
+  // not a real TeX parser. enough for the P/Q we actually print.
   return tex
     .replaceAll("\\dfrac{", "<span>")
     .replaceAll("\\cdot ", " · ")

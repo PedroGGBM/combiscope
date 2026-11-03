@@ -18,7 +18,7 @@ import { clear, svgEl, svgRoot } from "../lib/svg";
 
 export function mountCatalan(root: HTMLElement): void {
   root.innerHTML = `
-    <p class="lede">C<sub>n</sub> counts the same object in five pictures. Change n, then click any card: the matching Dyck word is highlighted everywhere. The right-hand panel is the reflection argument from the lecture.</p>
+    <p class="lede">Same Dyck word, drawn a few different ways. Move n and the object index. The pictures should all match. Reflection is underneath.</p>
     <div class="formula">C<sub>n</sub> = 1/(n+1) · (2n choose n) = Σ<sub>k</sub> C<sub>k</sub> C<sub>n−1−k</sub>, with C<sub>0</sub> = 1. For n = 3 the five stack words are 123, 132, 213, 231, 321; 312 is missing because 2 sits under 1 after 3 is popped.</div>
     <div class="toolbar">
       <label>n (semilength)
@@ -31,12 +31,12 @@ export function mountCatalan(root: HTMLElement): void {
     </div>
     <div class="grid five" id="cards"></div>
     <h2 style="margin:22px 0 8px">Reflection principle</h2>
-    <p class="caption">Monotone paths from (0,0) to (n,n) by East and North. A path is bad if it ever touches the line x − y = 1. Reflecting the prefix up to that first touch sends the path to one that starts at (1,−1). There are (2n choose n−1) of those, so the good paths number C<sub>n</sub>.</p>
+    <p class="caption">East and North from (0,0) to (n,n). Bad = touches x − y = 1. Reflect that prefix and you start at (1,−1). There are (2n choose n−1) of those, leftover is C<sub>n</sub>.</p>
     <div class="toolbar">
       <label>bad path
         <input id="bp" type="range" min="0" max="0" value="0">
       </label>
-      <button class="plain" id="step" type="button">Play reflection</button>
+      <button class="plain" id="step" type="button">Next bad path</button>
     </div>
     <div class="grid two">
       <div class="card"><h3>Original path</h3><div class="stage" id="orig"></div></div>
@@ -73,7 +73,7 @@ export function mountCatalan(root: HTMLElement): void {
     ];
     for (const [title, cap, draw] of views) {
       const card = document.createElement("div");
-      card.className = "card pick";
+      card.className = "card";
       card.innerHTML = `<h3>${title}</h3><p class="cap">${cap}</p><div class="stage"></div>`;
       draw(card.querySelector(".stage") as HTMLElement);
       cards.append(card);
@@ -105,7 +105,11 @@ export function mountCatalan(root: HTMLElement): void {
   nEl.addEventListener("input", renderCards);
   iEl.addEventListener("input", renderCards);
   bpEl.addEventListener("input", drawReflection);
-  root.querySelector("#step")!.addEventListener("click", drawReflection);
+  root.querySelector("#step")!.addEventListener("click", () => {
+    if (!bad.length) return;
+    bpEl.value = String((Number(bpEl.value) + 1) % bad.length);
+    drawReflection();
+  });
   renderCards();
 }
 
@@ -140,6 +144,7 @@ function drawPath(host: HTMLElement, pts: LatticePoint[], n: number, mark = -1, 
 type Point = { x: number; y: number };
 
 function layoutTree(t: ReturnType<typeof dyckToTree>, x: number, y: number, span: number, acc: { x: number; y: number; left?: Point; right?: Point }[] = [], idx = { n: 0 }): number {
+  // naive layout. trees get cramped at n=5, still readable-ish.
   if (!t) return -1;
   const id = idx.n++;
   const node = { x, y, left: undefined as Point | undefined, right: undefined as Point | undefined };
