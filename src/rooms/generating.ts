@@ -19,7 +19,19 @@ export function mountGenerating(root: HTMLElement): void {
       <label>n up to
         <input id="nmax" type="number" min="6" max="40" value="16">
       </label>
+      <div class="custom-row" id="custom" hidden>
+        <label>coeffs c1,c2,…
+          <input id="coeffs" value="1,1" size="10">
+        </label>
+        <label>init a0,a1,…
+          <input id="init" value="0,1" size="10">
+        </label>
+        <label>inhomog b
+          <input id="inhomog" type="number" value="0">
+        </label>
+      </div>
     </div>
+    <p class="err" id="gerr"></p>
     <div class="grid two">
       <div class="card"><h3>a<sub>n</sub></h3><p class="cap">Dots = recurrence. Dashed line = closed form (hopefully on top of the dots).</p><div class="stage plot" id="seq"></div></div>
       <div class="card"><h3>ratio a<sub>n+1</sub>/a<sub>n</sub></h3><p class="cap">→ largest |root| of C(t)=0, if the solver didn't mess up.</p><div class="stage plot" id="ratio"></div></div>
@@ -34,10 +46,39 @@ export function mountGenerating(root: HTMLElement): void {
     o.textContent = PRESETS[i].name;
     sel.append(o);
   }
+  const customOpt = document.createElement("option");
+  customOpt.value = "custom";
+  customOpt.textContent = "custom (type one)";
+  sel.append(customOpt);
   const nmax = root.querySelector("#nmax") as HTMLInputElement;
+  const customRow = root.querySelector("#custom") as HTMLElement;
+  const err = root.querySelector("#gerr") as HTMLElement;
+
+  function current(): Recurrence | null {
+    if (sel.value !== "custom") return PRESETS[Number(sel.value)];
+    const coeffs = parseList((root.querySelector("#coeffs") as HTMLInputElement).value);
+    const init = parseList((root.querySelector("#init") as HTMLInputElement).value);
+    const inhomog = Number((root.querySelector("#inhomog") as HTMLInputElement).value);
+    if (!coeffs.length || coeffs.length > 3 || !init.length || !Number.isFinite(inhomog)) {
+      return null;
+    }
+    return {
+      name: "custom",
+      coeffs,
+      init,
+      inhomog,
+      note: "typed in. order ≤ 3.",
+    };
+  }
 
   function render(): void {
-    const r: Recurrence = PRESETS[Number(sel.value)];
+    customRow.hidden = sel.value !== "custom";
+    err.textContent = "";
+    const r = current();
+    if (!r) {
+      err.textContent = "Need 1–3 coeffs and at least a0. Example: coeffs 1,1 and init 0,1.";
+      return;
+    }
     const N = Number(nmax.value);
     const a = sequence(r, N);
     const { latex } = generatingFunction(r);
@@ -57,16 +98,28 @@ export function mountGenerating(root: HTMLElement): void {
 
   sel.addEventListener("change", render);
   nmax.addEventListener("change", render);
+  for (const id of ["coeffs", "init", "inhomog"]) {
+    root.querySelector("#" + id)!.addEventListener("change", render);
+  }
   render();
+}
+
+function parseList(s: string): number[] {
+  return s
+    .split(/[,\s]+/)
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .map(Number)
+    .filter((n) => Number.isFinite(n));
 }
 
 function toHtml(tex: string): string {
   // not a real TeX parser. enough for the P/Q we actually print.
   return tex
-    .replaceAll("\\dfrac{", "<span>")
+    .replace(/\\dfrac\{([^{}]+)\}\{([^{}]+)\}/g, "($1) / ($2)")
     .replaceAll("\\cdot ", " · ")
     .replaceAll("^{", "<sup>")
-    .replaceAll("}", "</span>")
+    .replaceAll("}", "</sup>")
     .replaceAll("{", "")
     .replaceAll("\\,", " ")
     .replaceAll("\\text{(could not factor)}", "(could not factor)");
@@ -87,19 +140,19 @@ function plotSeq(host: HTMLElement, a: number[], overlay: number[] = [], skipNaN
   const ymax = Math.max(1, ...vals);
   const x = (i: number) => pad + (i * (W - 2 * pad)) / Math.max(a.length - 1, 1);
   const y = (v: number) => H - pad - ((v - ymin) / (ymax - ymin || 1)) * (H - 2 * pad);
-  svg.append(svgEl("line", { x1: pad, y1: y(0), x2: W - pad, y2: y(0), stroke: "#d8d0c2" }));
+  svg.append(svgEl("line", { x1: pad, y1: y(0), x2: W - pad, y2: y(0), stroke: "var(--grid)" }));
   const pts = a
     .map((v, i) => (skipNaN && !Number.isFinite(v) ? null : `${x(i)},${y(v)}`))
     .filter((s): s is string => s !== null)
     .join(" ");
-  svg.append(svgEl("polyline", { points: pts, fill: "none", stroke: "#0f766e", "stroke-width": 2 }));
+  svg.append(svgEl("polyline", { points: pts, fill: "none", stroke: "var(--path)", "stroke-width": 2 }));
   a.forEach((v, i) => {
     if (skipNaN && !Number.isFinite(v)) return;
-    svg.append(svgEl("circle", { cx: x(i), cy: y(v), r: 3, fill: "#1e3a5f" }));
+    svg.append(svgEl("circle", { cx: x(i), cy: y(v), r: 3, fill: "var(--ink)" }));
   });
   if (overlay.length) {
     const op = overlay.map((v, i) => `${x(i)},${y(v)}`).join(" ");
-    svg.append(svgEl("polyline", { points: op, fill: "none", stroke: "#9a3412", "stroke-width": 1.4, "stroke-dasharray": "4 3" }));
+    svg.append(svgEl("polyline", { points: op, fill: "none", stroke: "var(--path-alt)", "stroke-width": 1.4, "stroke-dasharray": "4 3" }));
   }
   host.append(svg);
 }

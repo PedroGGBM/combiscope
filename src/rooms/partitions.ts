@@ -35,11 +35,11 @@ export function mountPartitions(root: HTMLElement): void {
     </div>
     <p class="err" id="err"></p>
     <div class="grid three">
-      <div class="card"><h3>Ferrers diagram</h3><p class="cap" id="cap-a"></p><div class="stage" id="fa"></div></div>
-      <div class="card"><h3>Conjugate λ′</h3><p class="cap" id="cap-b"></p><div class="stage" id="fb"></div></div>
-      <div class="card"><h3>L-hooks / odd parts</h3><p class="cap" id="cap-c"></p><div class="stage" id="fc"></div></div>
+      <div class="card"><h3>ferrers diagram</h3><p class="cap" id="cap-a"></p><div class="stage" id="fa"></div></div>
+      <div class="card"><h3>conjugate λ′</h3><p class="cap" id="cap-b"></p><div class="stage" id="fb"></div></div>
+      <div class="card"><h3>l-hooks / odd parts</h3><p class="cap" id="cap-c"></p><div class="stage" id="fc"></div></div>
     </div>
-    <h2 style="margin:22px 0 8px">Euler product, truncated</h2>
+    <h2>euler product, truncated。</h2>
     <p class="caption">Truncate the product at k=20 and the coeffs are p(n) for n ≤ 20. No closed formula for a single p(n) in this course, the product is the thing.</p>
     <div class="card"><table class="nums" id="pn"></table></div>
   `;
@@ -97,7 +97,7 @@ export function mountPartitions(root: HTMLElement): void {
 }
 
 function drawFerrers(host: HTMLElement, p: Partition, highlightDurfee = false, hooks = false): void {
-  // dots as rounded rects. Durfee square in teal if we bother.
+  // dots as rounded rects. Durfee a bit lighter if we bother.
   clear(host);
   const cell = 18;
   const rows = p.length;
@@ -107,8 +107,8 @@ function drawFerrers(host: HTMLElement, p: Partition, highlightDurfee = false, h
   while (durfee < rows && p[durfee] >= durfee + 1) durfee++;
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < p[i]; j++) {
-      let fill = "#1e3a5f";
-      if (highlightDurfee && i < durfee && j < durfee) fill = "#0f766e";
+      let fill = "var(--cell)";
+      if (highlightDurfee && i < durfee && j < durfee) fill = "var(--cell-2)";
       if (hooks) {
         for (let h = 0; h < durfee; h++) {
           const arm = p[h] - (h + 1);
@@ -131,6 +131,6 @@ function drawFerrers(host: HTMLElement, p: Partition, highlightDurfee = false, h
 }
 
 function hookColor(i: number): string {
-  const pal = ["#9a3412", "#0f766e", "#1e3a5f", "#b45309", "#44403c"];
+  const pal = ["var(--hook-0)", "var(--hook-1)", "var(--hook-2)", "var(--hook-3)"];
   return pal[i % pal.length];
 }
