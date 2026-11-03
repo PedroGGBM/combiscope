@@ -34,7 +34,7 @@ export const PRESETS: Recurrence[] = [
     coeffs: [2, 2],
     init: [1, 3],
     inhomog: 0,
-    note: "HW 8 Q2. Roots 1±√3. a_3=22 if I counted right.",
+    note: "HW 8 Q2. Roots 1±√3.",
   },
   {
     name: "a_n = 3 a_{n-1} + 2, a_0 = 1",
