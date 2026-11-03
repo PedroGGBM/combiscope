@@ -132,6 +132,7 @@ function formatInt(v: number): string {
 }
 
 function plotSeq(host: HTMLElement, a: number[], overlay: number[] = [], skipNaN = false): void {
+  // dots from the recurrence. dashed line = closed form, if we got one.
   clear(host);
   const W = 420, H = 220, pad = 28;
   const svg = svgRoot(W, H);

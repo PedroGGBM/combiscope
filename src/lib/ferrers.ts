@@ -19,6 +19,7 @@ export function weight(p: Partition): number {
 }
 
 export function conjugate(p: Partition): Partition {
+  // transpose. #parts of λ' = largest part of λ.
   if (p.length === 0) return [];
   const m = p[0];
   const c: number[] = [];

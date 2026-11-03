@@ -53,6 +53,7 @@ export const PRESETS: Recurrence[] = [
 ];
 
 export function sequence(r: Recurrence, nMax: number): number[] {
+  // just run the recurrence forwards. nothing clever.
   const a = r.init.slice();
   const k = r.coeffs.length;
   while (a.length <= nMax) {
